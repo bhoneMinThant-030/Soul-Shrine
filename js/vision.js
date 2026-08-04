@@ -17,7 +17,10 @@ const TFJS = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0';
 const COCO = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3';
 
 const PHONE_MIN_SCORE  = 0.45;  // phones are small in frame — be lenient
-const PERSON_MIN_SCORE = 0.55;
+// coco-ssd's 'person' class is trained on full bodies. At webcam distance you
+// are head-and-shoulders filling the frame, which scores low and flickers —
+// hence the loose threshold. focus.js adds hysteresis on top.
+const PERSON_MIN_SCORE = 0.30;
 
 let model = null;
 let loading = null;
