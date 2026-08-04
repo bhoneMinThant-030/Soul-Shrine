@@ -1,0 +1,52 @@
+<!doctype html>
+<!--
+  ============================================================
+  FROZEN FILE — do not edit without telling the team out loud.
+  Every merge conflict this project will have starts here.
+
+  Each track renders its own markup into its own mount point
+  from its own JS file. There is no track-specific HTML here.
+  ============================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anchor — study well, think well</title>
+
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/reframe.css">
+  <link rel="stylesheet" href="css/focus.css">
+  <link rel="stylesheet" href="css/social.css">
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Anchor</span>
+    </div>
+    <div class="who" id="who"></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Main sections">
+    <button class="tab" role="tab" data-screen="focus"   aria-selected="true">Focus</button>
+    <button class="tab" role="tab" data-screen="reframe" aria-selected="false">Reframe</button>
+    <button class="tab" role="tab" data-screen="social"  aria-selected="false">Together</button>
+  </nav>
+
+  <main id="main">
+    <!-- Track B (cognitive / camera)  -->
+    <section id="focus-root"   class="screen" role="tabpanel" aria-label="Focus"></section>
+    <!-- Track A (psychological / AI) -->
+    <section id="reframe-root" class="screen" role="tabpanel" aria-label="Reframe" hidden></section>
+    <!-- Track C (social)             -->
+    <section id="social-root"  class="screen" role="tabpanel" aria-label="Together" hidden></section>
+  </main>
+
+  <!-- Screen-reader announcements. Any track may call announce() from app.js. -->
+  <div id="live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
