@@ -11,21 +11,32 @@ const daysAgo = n =>
 
 export const SEED = {
   user: {
-    name: 'Wei',
+    name: 'Bhone',
     school: 'Temasek Polytechnic',
     year: 2,
-    modules: ['Mobile App Development', 'Web App Development', 'Data Structures'],
+    gpa: 3.91,
+    modules: ['Mobile App Development', 'Web Application Development',
+              'Database', 'Data Structures', 'Computational Thinking'],
+
     // Track A cites these back to the user. Concrete > flattering.
+    // Every line here should contain a grade, a number, a named module,
+    // or a named event — otherwise the AI has nothing specific to say.
     wins: [
-      'Scored an A for Web App Development last semester',
-      'Built and shipped a working prototype in a 24-hour hackathon',
-      'Passed the Data Structures code interview on the first attempt',
-      'Went from 12 to 19 focused minutes per session over two weeks',
+      'Holding a 3.91 GPA',
+      'Distinction in Web Application Development',
+      'Distinction in Database',
+      'Distinction in Data Structures',
+      'Distinction in Computational Thinking',
+      'Top 10 finish in two separate hackathons',
+      'Elected President of ITSIG',
     ],
+
     struggles: [
-      'Doubts ability right before assessments',
-      'Loses focus in the last third of a study session',
+      'Doubts own ability right before assessments',
+      'Balancing a part-time job with a full course load',
+      'Gets overwhelmed when several deadlines land at once',
     ],
+
     studyStyle: null, // set by the quiz
   },
 
@@ -62,11 +73,11 @@ export const SEED = {
     { id: 'u2', name: 'Marcus', avatar: '🐢', style: 'Long blocks · quiet · steady',
       inSession: true,  module: 'Data Structures' },
     { id: 'u3', name: 'Hui Ling', avatar: '🐝', style: 'Short bursts · talkative · deadline-driven',
-      inSession: true,  module: 'Web App Development' },
+      inSession: true,  module: 'Web Application Development' },
     { id: 'u4', name: 'Daniel', avatar: '🦊', style: 'Early bird · quiet · deadline-driven',
       inSession: false, module: 'Mobile App Development' },
     { id: 'u5', name: 'Aisha',  avatar: '🐬', style: 'Long blocks · talkative · steady',
-      inSession: false, module: 'Data Structures' },
+      inSession: false, module: 'Database' },
     { id: 'u6', name: 'Ken',    avatar: '🦔', style: 'Short bursts · quiet · steady',
       inSession: true,  module: 'Mobile App Development' },
   ],

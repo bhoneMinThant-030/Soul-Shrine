@@ -1,1 +1,173 @@
-/* TRACK A only. Prefix your classes with .rf- to avoid collisions. */
+/* TRACK A only. Classes prefixed .rf- to avoid collisions. */
+
+.rf-sub { margin: 0 0 12px; font-size: 0.92rem; }
+
+.rf-input { min-height: 84px; margin-bottom: 12px; }
+
+.rf-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.rf-stat { font-size: 0.85rem; }
+
+.rf-keyrow {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.rf-key { flex: 1; font-size: 0.9rem; }
+
+/* --- result card --- */
+
+.rf-card { position: relative; }
+
+.rf-chip {
+  display: inline-block;
+  background: rgba(240, 163, 94, 0.14);
+  color: var(--warn);
+  border: 1px solid rgba(240, 163, 94, 0.35);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.rf-chip-sm { font-size: 0.75rem; padding: 2px 9px; }
+
+.rf-note-line {
+  margin: 12px 0 0;
+  color: var(--text-dim);
+}
+
+.rf-h3 {
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 22px 0 10px;
+}
+
+.rf-evidence {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rf-evidence li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 7px;
+  line-height: 1.5;
+}
+
+.rf-evidence li::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 0.65em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.rf-reframe {
+  margin: 20px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.rf-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.rf-err { color: var(--danger); margin: 0; }
+
+/* --- loading --- */
+
+.rf-loading { display: flex; align-items: center; gap: 12px; }
+
+.rf-dots { display: inline-flex; gap: 5px; }
+
+.rf-dots i {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: rf-pulse 1.3s ease-in-out infinite;
+}
+
+.rf-dots i:nth-child(2) { animation-delay: 0.18s; }
+.rf-dots i:nth-child(3) { animation-delay: 0.36s; }
+
+@keyframes rf-pulse {
+  0%, 70%, 100% { opacity: 0.25; transform: translateY(0); }
+  35%           { opacity: 1;    transform: translateY(-3px); }
+}
+
+/* --- crisis --- */
+
+.rf-crisis { border-color: rgba(229, 103, 95, 0.4); }
+
+.rf-lines { list-style: none; margin: 16px 0 0; padding: 0; }
+
+.rf-lines li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+}
+
+.rf-region {
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  min-width: 76px;
+}
+
+.rf-contact { color: var(--accent); font-weight: 650; }
+
+.rf-note { margin: 16px 0 0; font-size: 0.85rem; }
+
+/* --- history --- */
+
+.rf-history { list-style: none; margin: 0; padding: 0; }
+
+.rf-history li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.rf-history li:first-child { border-top: 0; }
+
+.rf-hist-thought {
+  color: var(--text-dim);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
