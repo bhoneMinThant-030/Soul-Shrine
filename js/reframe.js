@@ -352,14 +352,30 @@ function renderHistory() {
   return `
     <div class="card">
       <h2 class="h2">Earlier</h2>
-      <ul class="rf-history">
-        ${items.slice(0, 8).map(r => `
-          <li>
-            <span class="rf-hist-thought">“${esc(r.input)}”</span>
-            <span class="rf-chip rf-chip-sm">${esc(r.distortion)}</span>
-          </li>`).join('')}
-      </ul>
-    </div>`;
+
+      <div class="rf-history">
+        ${items.map(r => `
+          <details class="rf-history-item">
+            <summary class="rf-history-summary">
+              <span class="rf-hist-thought">
+                “${esc(r.input)}”
+              </span>
+
+              <span class="rf-chip rf-chip-sm">
+                ${esc(r.distortion)}
+              </span>
+
+              <span class="rf-history-arrow">⌄</span>
+            </summary>
+
+            <div class="rf-history-content">
+              <p>${esc(r.response)}</p>
+            </div>
+          </details>
+        `).join('')}
+      </div>
+    </div>
+  `;
 }
 
 async function submit() {

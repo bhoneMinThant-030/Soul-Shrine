@@ -171,3 +171,49 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.rf-history-item {
+  border-bottom: 1px solid var(--border);
+}
+
+.rf-history-item:last-child {
+  border-bottom: none;
+}
+
+.rf-history-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 24px;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.rf-history-summary::-webkit-details-marker {
+  display: none;
+}
+
+.rf-hist-thought {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rf-history-arrow {
+  font-size: 22px;
+  transition: transform 0.2s ease;
+}
+
+.rf-history-item[open] .rf-history-arrow {
+  transform: rotate(180deg);
+}
+
+.rf-history-content {
+  padding: 0 40px 20px 0;
+  line-height: 1.7;
+}
+
+.rf-history-content p {
+  margin: 0;
+}
