@@ -57,14 +57,14 @@ function onAccept(inviteId) {
   if (!invite) return;
   const from = store.friend(invite.fromId);
   window.announce?.(`Joining ${from?.name}'s session.`);
-  toFocus(invite.minutes, from?.name);
+  toFocus(invite.minutes, from);
 }
 
 function onJoin(friendId) {
   const f = store.friend(friendId);
   if (!f) return;
   window.announce?.(`Joining ${f.name}'s session.`);
-  toFocus(f.avgSession, f.name);
+  toFocus(f.avgSession, f);
 }
 
 /* ---------- render ---------- */

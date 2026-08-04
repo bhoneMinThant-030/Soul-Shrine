@@ -46,7 +46,8 @@ let tickTimer = null;
 let pollTimer = null;
 let stream    = null;
 let camError  = false;
-let partner   = null;           // set when Track C starts a session with a friend
+let partner   = null;           // { name, avatar, module } when Track C starts a joint session
+let micOn     = true;           // decorative — there is no audio channel, see runningView
 
 // Each detector latches: `active` only flips after enough consecutive
 // evidence, so one bad frame can neither trigger nor clear a state.
@@ -92,12 +93,13 @@ export function mount(el) {
  * when you accept an invite or join a friend who's already working.
  * The only entry point Track C touches; everything else here is private.
  */
-export function startWith({ minutes, partner: name = null } = {}) {
+export function startWith({ minutes, partner: who = null } = {}) {
   if (phase === 'running') return;
   const focus = Math.max(1, minutes || level.focus);
-  level = { id: 'custom', label: name ? `With ${name}` : 'Custom',
+  partner = typeof who === 'string' ? { name: who } : who;
+  level = { id: 'custom', label: partner ? `With ${partner.name}` : 'Custom',
             focus, brk: Math.max(3, Math.round(focus / 5)), hint: '' };
-  partner = name;
+  micOn = true;
   startSession();
 }
 
@@ -267,6 +269,10 @@ function paintTimer() {
     p.hidden = !isPaused();
     if (isPaused()) p.textContent = `paused — ${pauseReason()}`;
   }
+
+  // Mirror the pause onto your own tile so the state is visible where
+  // you're looking, not just on the clock.
+  root?.querySelector('#fc-you')?.classList.toggle('is-paused', isPaused());
 }
 
 function paintWarning() {
@@ -300,7 +306,13 @@ function render() {
   if (phase === 'running') {
     root.querySelector('#fc-cam')?.appendChild(videoEl);
     paintWarning();
+    paintTimer();
     root.querySelector('#fc-stop')?.addEventListener('click', endFocus);
+    root.querySelector('#fc-leave')?.addEventListener('click', endFocus);
+    root.querySelector('#fc-mic')?.addEventListener('click', () => {
+      micOn = !micOn;
+      render();   // cheap: the video element is re-parented, not rebuilt
+    });
   }
 
   if (phase === 'setup') {
@@ -361,20 +373,65 @@ function setupView() {
     </div>`;
 }
 
+const ICON_MIC = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M17 11a1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V20h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-2.07A7 7 0 0 1 5 11a1 1 0 1 1 2 0 5 5 0 0 0 10 0z"/></svg>`;
+
+const ICON_MIC_OFF = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3z"/><path d="M17 11a1 1 0 1 1 2 0 7 7 0 0 1-6 6.93V20h2a1 1 0 1 1 0 2H9a1 1 0 1 1 0-2h2v-2.07A7 7 0 0 1 5 11a1 1 0 1 1 2 0 5 5 0 0 0 10 0z"/><path d="M3.7 2.3a1 1 0 0 0-1.4 1.4l18 18a1 1 0 0 0 1.4-1.4z"/></svg>`;
+
+const ICON_LEAVE = `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M12 9c-1.6 0-3.15.25-4.6.7v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a.9.9 0 0 1-1.27-.02L.29 13.4a.9.9 0 0 1 .02-1.29C3.34 9.25 7.46 7.6 12 7.6s8.66 1.65 11.69 4.51a.9.9 0 0 1 .02 1.29l-2.62 2.13a.9.9 0 0 1-1.27.02 11.6 11.6 0 0 0-2.66-1.85.999.999 0 0 1-.56-.9V9.7A15.6 15.6 0 0 0 12 9z"/></svg>`;
+
 function runningView() {
+  const clock = `
+    <div class="fc-clock">
+      <span id="fc-time">${fmt(remainingMs)}</span>
+      <span class="fc-paused muted" id="fc-paused" hidden></span>
+    </div>
+    <div id="fc-warn" aria-live="assertive"></div>`;
+
+  if (!partner) {
+    return `
+      <div class="card fc-live">
+        ${clock}
+        <div class="fc-cam" id="fc-cam"></div>
+        <div class="fc-actions">
+          <button class="btn btn-ghost" id="fc-stop">End session early</button>
+          <span class="muted">${esc(level.label)} · ${level.focus} min</span>
+        </div>
+      </div>`;
+  }
+
+  // Partnered: their tile is presence only. There is no audio or video
+  // channel — the mic button below is deliberately decorative, and the
+  // camera has no off switch because it is the sensor, not a webcam call.
   return `
     <div class="card fc-live">
-      <div class="fc-clock">
-        <span id="fc-time">${fmt(remainingMs)}</span>
-        <span class="fc-paused muted" id="fc-paused" hidden></span>
+      ${clock}
+
+      <div class="fc-call">
+        <div class="fc-tile fc-tile-you" id="fc-you">
+          <div class="fc-cam" id="fc-cam"></div>
+          <span class="fc-tile-tag">You</span>
+        </div>
+
+        <div class="fc-tile fc-tile-them">
+          <span class="fc-tile-avatar">${partner.avatar || '🙂'}</span>
+          <span class="fc-tile-name">${esc(partner.name)}</span>
+          ${partner.module ? `<span class="fc-tile-meta">${esc(partner.module)}</span>` : ''}
+          <span class="fc-tile-status"><i class="fc-pulse" aria-hidden="true"></i>focusing</span>
+        </div>
       </div>
-      ${partner ? `<p class="fc-partner">Working alongside <strong>${esc(partner)}</strong></p>` : ''}
-      <div id="fc-warn" aria-live="assertive"></div>
-      <div class="fc-cam" id="fc-cam"></div>
-      <div class="fc-actions">
-        <button class="btn btn-ghost" id="fc-stop">End session early</button>
-        <span class="muted">${esc(level.label)} · ${level.focus} min</span>
+
+      <div class="fc-controls">
+        <button class="fc-ctrl ${micOn ? '' : 'is-off'}" id="fc-mic"
+                aria-pressed="${!micOn}" aria-label="${micOn ? 'Mute microphone' : 'Unmute microphone'}"
+                title="Decorative — this prototype has no audio channel">
+          ${micOn ? ICON_MIC : ICON_MIC_OFF}
+        </button>
+        <button class="fc-ctrl fc-ctrl-leave" id="fc-leave" aria-label="Leave session">
+          ${ICON_LEAVE}
+        </button>
       </div>
+
+      <p class="muted fc-callnote">${esc(level.label)} · ${level.focus} min · presence only, no audio</p>
     </div>`;
 }
 
