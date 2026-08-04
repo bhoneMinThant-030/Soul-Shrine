@@ -1,30 +1,26 @@
 /* ============================================================
-   TRACK B — camera detection.  Owner: <name>
+   TRACK B — camera detection.  Owner: Bhone
 
-   TensorFlow.js coco-ssd via CDN. It has a 'cell phone' class out
-   of the box — hold up your phone, the app warns you. Also detect
-   'person' absence for "left the desk".
+   TensorFlow.js coco-ssd via CDN. It ships a 'cell phone' class
+   out of the box — hold up your phone and the app sees it. We
+   also watch for 'person' disappearing, which means you left.
 
-   Skip gaze / head-pose tracking. Not worth the hours.
+   Everything here runs on-device. No frame ever leaves the
+   browser — that is worth saying out loud in the pitch, because
+   a judge will ask.
 
-   Add to index.html?  NO — index.html is frozen. Load the CDN
-   scripts dynamically from here instead (see loadModel below), or
-   ask the repo owner to add the two <script> tags in one commit.
-
-   Say "all processing happens on-device, nothing leaves your
-   browser" in the pitch. A judge will ask about privacy.
+   index.html is frozen, so the CDN scripts are injected from
+   here rather than added as <script> tags.
    ============================================================ */
 
-let model = null;
+const TFJS = 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0';
+const COCO = 'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3';
 
-/** Lazy-load TF.js + coco-ssd so the other two screens stay fast. */
-export async function loadModel() {
-  if (model) return model;
-  await inject('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs');
-  await inject('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd');
-  model = await window.cocoSsd.load();
-  return model;
-}
+const PHONE_MIN_SCORE  = 0.45;  // phones are small in frame — be lenient
+const PERSON_MIN_SCORE = 0.55;
+
+let model = null;
+let loading = null;
 
 function inject(src) {
   return new Promise((resolve, reject) => {
@@ -37,14 +33,47 @@ function inject(src) {
 }
 
 /**
- * Run one detection pass over a <video>.
- * @returns {{phone:boolean, personPresent:boolean}}
+ * Lazy-load TF.js + coco-ssd. Safe to call repeatedly — concurrent
+ * callers share one in-flight promise.
+ *
+ * Call this the moment the Focus tab opens, NOT when the user hits
+ * Start. First load is 5-10s and you do not want that dead air on
+ * stage after someone clicks a button.
+ */
+export function loadModel() {
+  if (model) return Promise.resolve(model);
+  if (loading) return loading;
+
+  loading = (async () => {
+    await inject(TFJS);
+    await inject(COCO);
+    model = await window.cocoSsd.load({ base: 'lite_mobilenet_v2' });
+    return model;
+  })();
+
+  return loading;
+}
+
+export function isReady() {
+  return !!model;
+}
+
+/**
+ * One detection pass over a <video>.
+ * @returns {Promise<{phone: boolean, personPresent: boolean}>}
  */
 export async function detect(videoEl) {
   const m = await loadModel();
+
+  // A video that has not buffered a frame yet throws inside coco-ssd.
+  if (!videoEl || videoEl.readyState < 2) {
+    return { phone: false, personPresent: true };
+  }
+
   const preds = await m.detect(videoEl);
+
   return {
-    phone:         preds.some(p => p.class === 'cell phone' && p.score > 0.5),
-    personPresent: preds.some(p => p.class === 'person'     && p.score > 0.5),
+    phone:         preds.some(p => p.class === 'cell phone' && p.score >= PHONE_MIN_SCORE),
+    personPresent: preds.some(p => p.class === 'person'     && p.score >= PERSON_MIN_SCORE),
   };
 }

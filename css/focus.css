@@ -1,1 +1,163 @@
-/* TRACK B only. Prefix your classes with .fc- to avoid collisions. */
+/* TRACK B only. Classes prefixed .fc- to avoid collisions. */
+
+.fc-sub { margin: 0 0 16px; font-size: 0.92rem; }
+
+/* --- level picker --- */
+
+.fc-levels {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 520px) {
+  .fc-levels { grid-template-columns: 1fr; }
+}
+
+.fc-level {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  font: inherit;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  cursor: pointer;
+}
+
+.fc-level:hover { border-color: var(--text-dim); }
+
+.fc-level.is-on {
+  border-color: var(--accent);
+  background: rgba(79, 209, 197, 0.08);
+}
+
+.fc-level-n { font-size: 1.5rem; font-weight: 680; line-height: 1.1; }
+.fc-level-l { font-weight: 620; }
+.fc-level-h { font-size: 0.78rem; }
+
+/* --- custom minutes --- */
+
+.fc-custom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.9rem;
+}
+
+.fc-mins { width: 88px; }
+
+.fc-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.fc-model { font-size: 0.82rem; }
+
+.fc-stats { margin: 0; line-height: 1.7; }
+
+/* --- live session --- */
+
+.fc-live { text-align: center; }
+
+.fc-clock {
+  font-size: 3.6rem;
+  font-weight: 300;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.fc-clock-sm { font-size: 2.2rem; }
+
+.fc-paused {
+  display: block;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+
+.fc-cam {
+  margin: 16px 0;
+  display: flex;
+  justify-content: center;
+}
+
+.fc-video {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: #000;
+  transform: scaleX(-1);        /* mirror — a self-view that isn't feels wrong */
+}
+
+.fc-live .fc-actions { justify-content: center; }
+
+/* --- warnings --- */
+
+.fc-alert {
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin: 12px 0 0;
+  font-weight: 600;
+  text-align: left;
+  animation: fc-in 0.22s ease-out;
+}
+
+.fc-alert-phone {
+  background: rgba(240, 163, 94, 0.14);
+  border: 1px solid rgba(240, 163, 94, 0.45);
+  color: var(--warn);
+}
+
+.fc-alert-absent {
+  background: rgba(229, 103, 95, 0.13);
+  border: 1px solid rgba(229, 103, 95, 0.4);
+  color: var(--danger);
+}
+
+.fc-alert-nocam {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  font-weight: 500;
+}
+
+@keyframes fc-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- summary --- */
+
+.fc-summary { list-style: none; margin: 0; padding: 0; }
+
+.fc-summary li {
+  padding: 9px 0;
+  border-top: 1px solid var(--line);
+  line-height: 1.5;
+}
+
+.fc-summary li:first-child { border-top: 0; }
+
+.fc-summary strong {
+  font-size: 1.15rem;
+  color: var(--accent);
+  margin-right: 2px;
+}
+
+.fc-trend { margin: 14px 0 0; font-size: 0.9rem; }
