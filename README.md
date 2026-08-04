@@ -1,4 +1,4 @@
-# Anchor
+# Soul Shrine
 
 Mental wellness app — HKIIT × TPIIT competition prototype.
 

@@ -9,7 +9,7 @@
 
 import { SEED } from './seed.js';
 
-const STORAGE_KEY = 'anchor.v1';
+const STORAGE_KEY = 'soulshrine.v1';
 
 const state = load() ?? structuredClone(SEED);
 const listeners = new Set();
