@@ -16,7 +16,7 @@
 import { store } from './store.js';
 
 const KEY_STORE = 'soulshrine.apikey';
-const MODEL = 'gemini-2.5-flash';
+const MODEL = 'gemini-3.6-flash';
 
 /* ---------- crisis path -------------------------------------
    Runs locally, BEFORE any network call. Safety routing must not
@@ -135,10 +135,13 @@ async function callGemini(thought) {
           // parsing free text out of a prose reply.
           responseMimeType: 'application/json',
           responseSchema: SCHEMA,
-          // Thinking off keeps the demo snappy; this task is a single
-          // short judgement, not multi-step reasoning.
-          thinkingConfig: { thinkingBudget: 0 },
-          maxOutputTokens: 1200,
+          // gemini-3.x takes thinkingLevel, not thinkingBudget (which 400s).
+          // "low" drops thinking spend to zero — this is a single short
+          // judgement, and it keeps the live demo fast.
+          thinkingConfig: { thinkingLevel: 'low' },
+          // Thinking tokens count against this cap, so leave headroom even
+          // at low: at 1200 the JSON came back truncated mid-string.
+          maxOutputTokens: 4000,
           temperature: 0.7,
         },
       }),
@@ -162,7 +165,12 @@ async function callGemini(thought) {
     throw new Error(`FINISH_${candidate.finishReason}`);
   }
 
-  const text = (candidate.content?.parts || []).map(p => p.text).join('');
+  // Parts can carry non-text fields (thoughtSignature) — filter, or the
+  // join splices "undefined" into the JSON and the parse throws.
+  const text = (candidate.content?.parts || [])
+    .filter(p => typeof p.text === 'string')
+    .map(p => p.text)
+    .join('');
   if (!text) throw new Error('EMPTY');
 
   return JSON.parse(text);
@@ -286,7 +294,7 @@ function renderResult() {
   const d = state.data;
   return `
     <div class="card rf-card">
-      ${state.offline ? '<span class="rf-badge">offline mode</span>' : ''}
+      ${state.offline ? `<span class="rf-badge" title="${esc(state.error || '')}">offline mode</span>` : ''}
       <span class="rf-chip">${esc(d.distortion)}</span>
       <p class="rf-note-line">${esc(d.distortion_note)}</p>
 
@@ -296,6 +304,9 @@ function renderResult() {
       </ul>
 
       <p class="rf-reframe">${esc(d.reframe)}</p>
+
+      ${state.offline && state.error ? `
+        <p class="rf-diag">Live call failed — ${esc(state.error)}</p>` : ''}
     </div>`;
 }
 
@@ -335,10 +346,11 @@ async function submit() {
     setState({ view: 'done', data, offline: false });
     window.announce?.(`Reframed. Pattern identified: ${data.distortion}.`);
   } catch (err) {
-    console.warn('[reframe] falling back:', err.message);
-    // Demo must never die on a network or key problem.
+    console.warn('[reframe] falling back:', err);
+    // Demo must never die on a network or key problem — but say so on the
+    // card, otherwise a broken key is indistinguishable from success.
     store.addReframe({ input: thought, distortion: FALLBACK.distortion, response: FALLBACK.reframe });
-    setState({ view: 'done', data: FALLBACK, offline: true });
+    setState({ view: 'done', data: FALLBACK, offline: true, error: err.message });
     window.announce?.('Reframed in offline mode.');
   }
 }
