@@ -6,7 +6,7 @@
      textarea -> crisis check (local, deterministic)
                    |- match -> helplines, NO api call
                    `- clear -> prompt built from store.user + store.todayStats
-                               -> Claude -> { distortion, note, evidence[], reframe }
+                               -> Gemini -> { distortion, note, evidence[], reframe }
                                -> card -> store.addReframe() -> history
 
    The API key is never committed. It's pasted once into the
@@ -16,7 +16,7 @@
 import { store } from './store.js';
 
 const KEY_STORE = 'soulshrine.apikey';
-const MODEL = 'claude-opus-5';
+const MODEL = 'gemini-2.5-flash';
 
 /* ---------- crisis path -------------------------------------
    Runs locally, BEFORE any network call. Safety routing must not
@@ -52,16 +52,18 @@ const looksLikeCrisis = text => CRISIS_PATTERNS.some(re => re.test(text));
    the single worst thing this feature could produce.
 ------------------------------------------------------------- */
 
+// Gemini's responseSchema is an OpenAPI subset: uppercase type names,
+// no `additionalProperties`. propertyOrdering keeps the JSON stable.
 const SCHEMA = {
-  type: 'object',
+  type: 'OBJECT',
   properties: {
-    distortion:      { type: 'string' },
-    distortion_note: { type: 'string' },
-    evidence:        { type: 'array', items: { type: 'string' } },
-    reframe:         { type: 'string' },
+    distortion:      { type: 'STRING' },
+    distortion_note: { type: 'STRING' },
+    evidence:        { type: 'ARRAY', items: { type: 'STRING' } },
+    reframe:         { type: 'STRING' },
   },
   required: ['distortion', 'distortion_note', 'evidence', 'reframe'],
-  additionalProperties: false,
+  propertyOrdering: ['distortion', 'distortion_note', 'evidence', 'reframe'],
 };
 
 function buildSystem() {
@@ -111,33 +113,36 @@ function getKey() {
   return localStorage.getItem(KEY_STORE) || '';
 }
 
-async function callClaude(thought) {
+async function callGemini(thought) {
   const key = getKey();
   if (!key) throw new Error('NO_KEY');
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-      'x-api-key': key,
-      'anthropic-version': '2023-06-01',
-      // Required to call the API directly from a browser. Fine for a demo;
-      // production would proxy this server-side so the key is never shipped.
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 2000,
-      system: buildSystem(),
-      // `effort: low` keeps the demo snappy — Opus 5 is strong at low effort.
-      // Structured output means we never parse free text on stage.
-      output_config: {
-        effort: 'low',
-        format: { type: 'json_schema', schema: SCHEMA },
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`,
+    {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        // Key goes in a header, never the URL — a key in a query string
+        // ends up in browser history and any proxy log in between.
+        'x-goog-api-key': key,
       },
-      messages: [{ role: 'user', content: thought }],
-    }),
-  });
+      body: JSON.stringify({
+        system_instruction: { parts: [{ text: buildSystem() }] },
+        contents: [{ role: 'user', parts: [{ text: thought }] }],
+        generationConfig: {
+          // Schema-constrained JSON — nothing on stage depends on
+          // parsing free text out of a prose reply.
+          responseMimeType: 'application/json',
+          responseSchema: SCHEMA,
+          // Thinking off keeps the demo snappy; this task is a single
+          // short judgement, not multi-step reasoning.
+          thinkingConfig: { thinkingBudget: 0 },
+          maxOutputTokens: 1200,
+          temperature: 0.7,
+        },
+      }),
+    });
 
   if (!res.ok) {
     const detail = await res.text();
@@ -146,9 +151,18 @@ async function callClaude(thought) {
 
   const data = await res.json();
 
-  if (data.stop_reason === 'refusal') throw new Error('REFUSED');
+  // Safety filters can drop the prompt before a candidate is produced.
+  if (data.promptFeedback?.blockReason) {
+    throw new Error(`BLOCKED: ${data.promptFeedback.blockReason}`);
+  }
 
-  const text = data.content.find(b => b.type === 'text')?.text;
+  const candidate = data.candidates?.[0];
+  if (!candidate) throw new Error('NO_CANDIDATE');
+  if (candidate.finishReason && candidate.finishReason !== 'STOP') {
+    throw new Error(`FINISH_${candidate.finishReason}`);
+  }
+
+  const text = (candidate.content?.parts || []).map(p => p.text).join('');
   if (!text) throw new Error('EMPTY');
 
   return JSON.parse(text);
@@ -212,8 +226,8 @@ function render() {
       ${hasKey ? '' : `
         <div class="rf-keyrow">
           <input class="input rf-key" id="rf-key" type="password"
-            placeholder="Paste your Anthropic API key to enable live reframing"
-            aria-label="Anthropic API key">
+            placeholder="Paste your Gemini API key to enable live reframing"
+            aria-label="Gemini API key">
           <button class="btn btn-ghost" id="rf-savekey">Save</button>
         </div>`}
     </div>
@@ -316,7 +330,7 @@ async function submit() {
   setState({ view: 'loading', data: null, offline: false });
 
   try {
-    const data = await callClaude(thought);
+    const data = await callGemini(thought);
     store.addReframe({ input: thought, distortion: data.distortion, response: data.reframe });
     setState({ view: 'done', data, offline: false });
     window.announce?.(`Reframed. Pattern identified: ${data.distortion}.`);
