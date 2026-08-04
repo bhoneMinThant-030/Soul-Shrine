@@ -5,23 +5,23 @@
    ============================================================ */
 
 :root {
-  --bg:        #0f1418;
-  --surface:   #172026;
-  --surface-2: #1f2b33;
-  --line:      #2a3941;
+  --bg:        #f8f9fe;
+  --surface:   #ffffff;
+  --surface-2: #f1f2f8;
+  --line:      #e5e6ee;
 
-  --text:      #e8eef1;
-  --text-dim:  #9aacb6;
+  --text:      #25273c;
+  --text-dim:  #747999;
 
-  --accent:    #4fd1c5;
-  --accent-dk: #2c9d93;
+  --accent:    #6264df;
+  --accent-dk: #4b4dc8;
   --warn:      #f0a35e;
   --danger:    #e5675f;
   --ok:        #6fcf8b;
 
   --radius: 14px;
   --gap: 16px;
-  --max-w: 720px;
+  --max-w: 760px;
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
@@ -66,12 +66,15 @@ html, body {
   align-items: center;
   justify-content: space-between;
   gap: var(--gap);
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--line);
+  padding: 9px 24px 5px;
+  border-bottom: 0;
   max-width: var(--max-w);
   margin: 0 auto;
+  min-height: 54px;
 }
 
+.profile-orb { width: 40px; height: 40px; border-radius: 50%; background: #dedfe5; }
+.icon-btn { border: 0; background: transparent; color: #4d50d5; font-size: 1.65rem; line-height: 1; cursor: pointer; transform: rotate(180deg); }
 .brand { display: flex; align-items: center; gap: 10px; }
 
 .brand-mark {
@@ -81,15 +84,13 @@ html, body {
   display: inline-block;
 }
 
-.brand-name { font-weight: 650; letter-spacing: 0.01em; }
+.brand-name { color: #4b4dd0; font-size: 1.55rem; font-weight: 750; letter-spacing: -0.035em; }
 
 .who { color: var(--text-dim); font-size: 0.9rem; }
 
 /* --- tabs --- */
 .tabs {
-  display: flex;
-  gap: 4px;
-  padding: 12px 20px 0;
+  display: none;
   max-width: var(--max-w);
   margin: 0 auto;
 }
@@ -118,7 +119,8 @@ html, body {
 #main {
   max-width: var(--max-w);
   margin: 0 auto;
-  padding: 20px;
+  padding: 12px 24px 94px;
+  min-height: calc(100vh - 68px);
 }
 
 .screen[hidden] { display: none; }
@@ -131,6 +133,10 @@ html, body {
   padding: 18px;
   margin-bottom: var(--gap);
 }
+
+.bottom-nav { position: fixed; z-index: 10; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: var(--max-w); margin: 0 auto; padding: 12px 22px 17px; border-top: 1px solid #ececf2; background: rgba(250, 251, 255, .96); backdrop-filter: blur(12px); }
+.bottom-tab { display: grid; place-items: center; width: 38px; height: 38px; margin: auto; border: 0; border-radius: 50%; background: transparent; color: #777b92; font-size: 1.55rem; line-height: 1; cursor: pointer; }
+.bottom-tab.is-active { background: #6668df; color: white; box-shadow: 0 5px 12px rgba(100, 103, 222, .25); }
 
 .btn {
   appearance: none;

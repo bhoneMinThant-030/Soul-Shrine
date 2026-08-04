@@ -15,6 +15,7 @@
   <title>Soul Shrine — study well, think well</title>
 
   <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/home.css">
   <link rel="stylesheet" href="css/reframe.css">
   <link rel="stylesheet" href="css/focus.css">
   <link rel="stylesheet" href="css/social.css">
@@ -22,27 +23,41 @@
 <body>
 
   <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"></span>
-      <span class="brand-name">Soul Shrine</span>
-    </div>
-    <div class="who" id="who"></div>
+    <div class="profile-orb" aria-hidden="true"></div>
+    <div class="brand-name">Fourward</div>
+    <button class="icon-btn" id="notifications" aria-label="Notifications" title="Notifications">
+      <span aria-hidden="true">♧</span>
+    </button>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Main sections">
-    <button class="tab" role="tab" data-screen="focus"   aria-selected="true">Focus</button>
-    <button class="tab" role="tab" data-screen="reframe" aria-selected="false">Reframe</button>
-    <button class="tab" role="tab" data-screen="social"  aria-selected="false">Together</button>
+    <button class="tab" role="tab" data-screen="home" aria-selected="true">Home</button>
+    <button class="tab" role="tab" data-screen="reframe" aria-selected="false">Advice</button>
+    <button class="tab" role="tab" data-screen="focus" aria-selected="false">Focus</button>
+    <button class="tab" role="tab" data-screen="social" aria-selected="false">Together</button>
+    <button class="tab" role="tab" data-screen="profile" aria-selected="false">Profile</button>
   </nav>
 
   <main id="main">
+    <section id="home-root" class="screen" role="tabpanel" aria-label="Home"></section>
     <!-- Track B (cognitive / camera)  -->
-    <section id="focus-root"   class="screen" role="tabpanel" aria-label="Focus"></section>
+    <section id="focus-root"   class="screen" role="tabpanel" aria-label="Focus" hidden></section>
     <!-- Track A (psychological / AI) -->
     <section id="reframe-root" class="screen" role="tabpanel" aria-label="Reframe" hidden></section>
     <!-- Track C (social)             -->
     <section id="social-root"  class="screen" role="tabpanel" aria-label="Together" hidden></section>
+    <section id="profile-root" class="screen" role="tabpanel" aria-label="Profile" hidden>
+      <div class="card"><h2 class="h2">Your profile</h2><p class="muted">Profile editing is part of the next product slice.</p></div>
+    </section>
   </main>
+
+  <nav class="bottom-nav" aria-label="Primary navigation">
+    <button class="bottom-tab is-active" data-screen="home" aria-label="Home"><span aria-hidden="true">⌂</span></button>
+    <button class="bottom-tab" data-screen="reframe" aria-label="AI advice"><span aria-hidden="true">▱</span></button>
+    <button class="bottom-tab" data-screen="focus" aria-label="Focus"><span aria-hidden="true">◷</span></button>
+    <button class="bottom-tab" data-screen="social" aria-label="Together"><span aria-hidden="true">♧</span></button>
+    <button class="bottom-tab" data-screen="profile" aria-label="Profile"><span aria-hidden="true">♙</span></button>
+  </nav>
 
   <!-- Screen-reader announcements. Any track may call announce() from app.js. -->
   <div id="live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
