@@ -109,8 +109,42 @@ Never diagnose. Never say "as an AI". Never suggest they are being irrational.`;
 
 /* ---------- api ---------------------------------------------- */
 
+/* Key resolution, in order:
+     1. localStorage  (pasted into the box, survives reloads)
+     2. .env          (served as a static file by the dev server)
+   Both are local-only. .env is gitignored, so nothing lands in the repo.
+
+   ⚠️  This works because the dev server serves the whole folder — which
+   means /.env is downloadable by anything that can reach the server. On
+   localhost that is only you. NEVER deploy this folder to a public host
+   or to GitHub Pages: the key becomes a public download. If this ever
+   needs to go online, move the call behind a server-side proxy first.   */
+
+let apiKey = '';
+
 function getKey() {
-  return localStorage.getItem(KEY_STORE) || '';
+  return apiKey;
+}
+
+async function resolveKey() {
+  // .env wins. It used to be the other way round, which meant one bad paste
+  // into localStorage shadowed a perfectly good .env forever — and the
+  // fallback card made that look like success.
+  try {
+    const res = await fetch('.env', { cache: 'no-store' });
+    if (res.ok) {
+      const match = (await res.text())
+        .match(/^[ \t]*gemini_api_key[ \t]*=[ \t]*(.+?)[ \t]*$/im);
+      if (match) {
+        apiKey = match[1].replace(/^["']|["']$/g, '').trim();
+        if (apiKey) return;
+      }
+    }
+  } catch {
+    /* no .env served — fall through to localStorage / the paste box */
+  }
+
+  apiKey = (localStorage.getItem(KEY_STORE) || '').trim();
 }
 
 async function callGemini(thought) {
@@ -203,6 +237,7 @@ let state = { view: 'idle', data: null, error: null, offline: false };
 export function mount(el) {
   root = el;
   render();
+  resolveKey().then(render);   // re-render once .env has been checked
   store.subscribe(() => { if (state.view === 'idle') render(); });
 }
 
@@ -253,7 +288,7 @@ function render() {
   const saveBtn = root.querySelector('#rf-savekey');
   if (saveBtn) saveBtn.addEventListener('click', () => {
     const v = root.querySelector('#rf-key').value.trim();
-    if (v) { localStorage.setItem(KEY_STORE, v); render(); }
+    if (v) { localStorage.setItem(KEY_STORE, v); apiKey = v; render(); }
   });
 }
 
