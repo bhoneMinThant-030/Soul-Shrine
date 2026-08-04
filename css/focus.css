@@ -88,6 +88,12 @@
   color: var(--warn);
 }
 
+.fc-partner {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
 .fc-cam {
   margin: 16px 0;
   display: flex;

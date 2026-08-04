@@ -46,6 +46,7 @@ let tickTimer = null;
 let pollTimer = null;
 let stream    = null;
 let camError  = false;
+let partner   = null;           // set when Track C starts a session with a friend
 
 // Each detector latches: `active` only flips after enough consecutive
 // evidence, so one bad frame can neither trigger nor clear a state.
@@ -84,6 +85,20 @@ export function mount(el) {
     console.warn('[focus] model load failed:', err);
     render();
   });
+}
+
+/**
+ * Start a session on someone else's behalf — used by the social screen
+ * when you accept an invite or join a friend who's already working.
+ * The only entry point Track C touches; everything else here is private.
+ */
+export function startWith({ minutes, partner: name = null } = {}) {
+  if (phase === 'running') return;
+  const focus = Math.max(1, minutes || level.focus);
+  level = { id: 'custom', label: name ? `With ${name}` : 'Custom',
+            focus, brk: Math.max(3, Math.round(focus / 5)), hint: '' };
+  partner = name;
+  startSession();
 }
 
 function fmt(ms) {
@@ -233,6 +248,7 @@ function reset() {
   phase = 'setup';
   session = null;
   summary = null;
+  partner = null;
   render();
 }
 
@@ -352,6 +368,7 @@ function runningView() {
         <span id="fc-time">${fmt(remainingMs)}</span>
         <span class="fc-paused muted" id="fc-paused" hidden></span>
       </div>
+      ${partner ? `<p class="fc-partner">Working alongside <strong>${esc(partner)}</strong></p>` : ''}
       <div id="fc-warn" aria-live="assertive"></div>
       <div class="fc-cam" id="fc-cam"></div>
       <div class="fc-actions">

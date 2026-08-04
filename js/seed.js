@@ -65,20 +65,30 @@ export const SEED = {
 
   reframes: [],
 
-  // Mock study-room participants. Nobody expects a prototype to
-  // have real users — they expect the flow to be legible.
-  people: [
-    { id: 'u1', name: 'Priya',  avatar: '🦉', style: 'Night owl · quiet · steady',
-      inSession: true,  module: 'Mobile App Development' },
-    { id: 'u2', name: 'Marcus', avatar: '🐢', style: 'Long blocks · quiet · steady',
-      inSession: true,  module: 'Data Structures' },
-    { id: 'u3', name: 'Hui Ling', avatar: '🐝', style: 'Short bursts · talkative · deadline-driven',
-      inSession: true,  module: 'Web Application Development' },
-    { id: 'u4', name: 'Daniel', avatar: '🦊', style: 'Early bird · quiet · deadline-driven',
-      inSession: false, module: 'Mobile App Development' },
-    { id: 'u5', name: 'Aisha',  avatar: '🐬', style: 'Long blocks · talkative · steady',
-      inSession: false, module: 'Database' },
-    { id: 'u6', name: 'Ken',    avatar: '🦔', style: 'Short bursts · quiet · steady',
-      inSession: true,  module: 'Mobile App Development' },
+  // Mock friends. Nobody expects a prototype to have real accounts —
+  // they expect the flow to be legible. avgSession + whenStudies are the
+  // matching signal that replaced the personality quiz: they describe
+  // behaviour, which is defensible, rather than a personality type.
+  friends: [
+    { id: 'u1', name: 'Priya',    avatar: '🦉', status: 'in-session',
+      module: 'Mobile App Development',     avgSession: 25, whenStudies: 'evenings',
+      startedMinAgo: 12 },
+    { id: 'u2', name: 'Marcus',   avatar: '🐢', status: 'in-session',
+      module: 'Data Structures',            avgSession: 50, whenStudies: 'late nights',
+      startedMinAgo: 31 },
+    { id: 'u3', name: 'Hui Ling', avatar: '🐝', status: 'in-session',
+      module: 'Web Application Development', avgSession: 15, whenStudies: 'afternoons',
+      startedMinAgo: 4 },
+    { id: 'u4', name: 'Daniel',   avatar: '🦊', status: 'online',
+      module: 'Mobile App Development',     avgSession: 30, whenStudies: 'mornings' },
+    { id: 'u5', name: 'Aisha',    avatar: '🐬', status: 'offline',
+      module: 'Database',                   avgSession: 45, whenStudies: 'evenings' },
+    { id: 'u6', name: 'Ken',      avatar: '🦔', status: 'online',
+      module: 'Mobile App Development',     avgSession: 25, whenStudies: 'evenings' },
+  ],
+
+  // One pending invite, so there's something to accept live on stage.
+  invites: [
+    { id: 'inv1', fromId: 'u1', minutes: 25 },
   ],
 };

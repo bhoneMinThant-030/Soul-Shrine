@@ -15,8 +15,17 @@ const state = load() ?? structuredClone(SEED);
 const listeners = new Set();
 
 function load() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); }
+  let saved;
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); }
   catch { return null; }
+  if (!saved) return null;
+
+  // Anyone who used the app before a new field existed has a saved blob
+  // without it. Backfill from SEED rather than crashing on undefined.
+  for (const [key, value] of Object.entries(SEED)) {
+    if (saved[key] === undefined) saved[key] = structuredClone(value);
+  }
+  return saved;
 }
 
 function persist() {
@@ -117,6 +126,35 @@ export const store = {
   /** Track C: save quiz result. */
   setStudyStyle(style) {
     state.user.studyStyle = style;
+    emit();
+  },
+
+  /* ---- social ---- */
+
+  get friends() { return state.friends || []; },
+  get invites() { return state.invites || []; },
+
+  friend(id) { return store.friends.find(f => f.id === id); },
+
+  /** Remove an invite and hand it back so the caller can act on it. */
+  acceptInvite(id) {
+    const i = state.invites.findIndex(x => x.id === id);
+    if (i === -1) return null;
+    const [invite] = state.invites.splice(i, 1);
+    emit();
+    return invite;
+  },
+
+  declineInvite(id) {
+    state.invites = state.invites.filter(x => x.id !== id);
+    emit();
+  },
+
+  /** Outgoing invite — marks the friend as pending until they "reply". */
+  inviteFriend(friendId, minutes) {
+    const f = store.friend(friendId);
+    if (!f) return;
+    f.invitedMinutes = minutes;
     emit();
   },
 
