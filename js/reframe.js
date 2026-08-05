@@ -232,7 +232,7 @@ const FALLBACK = {
 /* ---------- ui ----------------------------------------------- */
 
 let root = null;
-let state = { view: 'idle', data: null, error: null, offline: false };
+let state = { view: 'idle', data: null, error: null, offline: false, thought: '' };
 
 /**
  * Prefill the box from elsewhere in the app (the home dashboard's advice
@@ -240,11 +240,10 @@ let state = { view: 'idle', data: null, error: null, offline: false };
  */
 export function openWith(text) {
   if (!root) return;
-  state = { view: 'idle', data: null, error: null, offline: false };
+  state = { view: 'idle', data: null, error: null, offline: false, thought: text };
   render();
   const el = root.querySelector('#rf-text');
   if (!el) return;
-  el.value = text;
   el.focus();
   el.setSelectionRange(text.length, text.length);
 }
@@ -276,7 +275,7 @@ function render() {
       <p class="muted rf-sub">Write it exactly as it sounds in your head. Nothing here leaves your device except the sentence itself.</p>
       <textarea class="input rf-input" id="rf-text" rows="3"
         placeholder="e.g. I'm going to fail the module mobile app dev"
-        aria-label="The negative thought you want to reframe"></textarea>
+        aria-label="The negative thought you want to reframe">${esc(state.thought || '')}</textarea>
       <div class="rf-actions">
         <button class="btn" id="rf-go">Reframe this</button>
         <span class="rf-stat muted">${s.weekAvgFocusedMin} min avg focus · ${s.distractionCount} distractions today</span>
@@ -397,6 +396,10 @@ async function submit() {
   const el = root.querySelector('#rf-text');
   const thought = el.value.trim();
   if (!thought) return;
+
+  // Kept in state so the re-render doesn't wipe what they typed — the
+  // thought is the thing the card is answering, it should stay on screen.
+  state.thought = thought;
 
   if (looksLikeCrisis(thought)) {
     setState({ view: 'crisis', data: null, offline: false });
