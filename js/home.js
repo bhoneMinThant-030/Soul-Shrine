@@ -59,16 +59,15 @@ function render() {
     <p class="home-proof">${stats.focusedMin ? `${stats.focusedMin} focused minutes logged today.` : 'A small block today can make tomorrow feel lighter.'}</p>
   `;
 
-  root.querySelector('#home-focus').addEventListener('click', () => go('focus'));
-  root.querySelector('#home-advice').addEventListener('click', () => go('reframe'));
+  // Optional-chained: removing a card from the markup above should change
+  // the page, not throw and take the rest of the app down with it.
+  root.querySelector('#home-focus')?.addEventListener('click', () => go('focus'));
+  root.querySelector('#home-advice')?.addEventListener('click', () => go('reframe'));
   root.querySelectorAll('[data-advice]').forEach(card =>
     card.addEventListener('click', () => {
       go('reframe');
       openWith(ADVICE[card.dataset.advice] || '');
     }));
-  root.querySelector('#home-mood').addEventListener('click', () => {
-    window.announce?.('Mood logging will be available from your profile.');
-  });
 }
 
 function esc(value) {

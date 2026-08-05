@@ -49,9 +49,15 @@ function boot() {
   const who = document.getElementById('who');
   if (who) who.textContent = store.user.name;
 
-  for (const { mod, root } of Object.values(SCREENS)) {
-    // A track that hasn't landed yet just leaves its panel empty.
-    mod?.mount?.(root);
+  for (const [name, { mod, root }] of Object.entries(SCREENS)) {
+    // One screen throwing must not take the rest of the app with it —
+    // before this guard, a stale selector in home.js stopped boot() dead
+    // and the database never got a chance to connect.
+    try {
+      mod?.mount?.(root);
+    } catch (err) {
+      console.error(`[app] ${name} failed to mount:`, err);
+    }
   }
 
   for (const tab of document.querySelectorAll('.tab')) {
