@@ -234,6 +234,21 @@ const FALLBACK = {
 let root = null;
 let state = { view: 'idle', data: null, error: null, offline: false };
 
+/**
+ * Prefill the box from elsewhere in the app (the home dashboard's advice
+ * cards). Doesn't submit — the user still edits and decides.
+ */
+export function openWith(text) {
+  if (!root) return;
+  state = { view: 'idle', data: null, error: null, offline: false };
+  render();
+  const el = root.querySelector('#rf-text');
+  if (!el) return;
+  el.value = text;
+  el.focus();
+  el.setSelectionRange(text.length, text.length);
+}
+
 export function mount(el) {
   root = el;
   render();

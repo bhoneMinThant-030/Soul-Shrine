@@ -1,4 +1,13 @@
 import { store } from './store.js';
+import { openWith } from './reframe.js';
+
+// The two advice cards are shortcuts into the same reframing engine, but
+// each seeds a different starting thought — otherwise they're one button
+// wearing two hats.
+const ADVICE = {
+  exam: "I'm going to freeze in the exam and forget everything I revised",
+  motivation: "I can't make myself start anything today",
+};
 
 let root = null;
 
@@ -64,7 +73,11 @@ function render() {
 
   root.querySelector('#home-focus').addEventListener('click', () => go('focus'));
   root.querySelector('#home-advice').addEventListener('click', () => go('reframe'));
-  root.querySelectorAll('[data-advice]').forEach(card => card.addEventListener('click', () => go('reframe')));
+  root.querySelectorAll('[data-advice]').forEach(card =>
+    card.addEventListener('click', () => {
+      go('reframe');
+      openWith(ADVICE[card.dataset.advice] || '');
+    }));
   root.querySelector('#home-mood').addEventListener('click', () => {
     window.announce?.('Mood logging will be available from your profile.');
   });

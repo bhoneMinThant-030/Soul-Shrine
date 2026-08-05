@@ -1,6 +1,10 @@
 /* ============================================================
-   FROZEN FILE — shell, tab routing, screen-reader announcements.
-   Do not add feature logic here. Put it in your own track file.
+   Shell — tab routing and screen-reader announcements.
+   Feature logic belongs in the per-screen modules, not here.
+
+   Both the sidebar and the bottom bar carry class="tab", so any
+   screen can navigate with:
+     document.querySelector('.tab[data-screen="focus"]').click()
    ============================================================ */
 
 import { store }   from './store.js';
@@ -40,6 +44,9 @@ function show(name) {
 }
 
 function boot() {
+  const who = document.getElementById('who');
+  if (who) who.textContent = store.user.name;
+
   for (const { mod, root } of Object.values(SCREENS)) {
     // A track that hasn't landed yet just leaves its panel empty.
     mod?.mount?.(root);

@@ -173,7 +173,7 @@
 }
 
 .rf-history-item {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
 }
 
 .rf-history-item:last-child {
