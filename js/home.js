@@ -56,12 +56,6 @@ function render() {
       </button>
     </section>
 
-    <button class="mood-card" id="home-mood">
-      <span class="mood-face" aria-hidden="true">●‿●</span>
-      <span><strong>How are you feeling?</strong><small>Log your mood today</small></span>
-      <span class="mood-action">Log</span>
-    </button>
-
     <p class="home-proof">${stats.focusedMin ? `${stats.focusedMin} focused minutes logged today.` : 'A small block today can make tomorrow feel lighter.'}</p>
   `;
 

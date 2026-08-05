@@ -8,17 +8,19 @@
    ============================================================ */
 
 import { store }   from './store.js';
+import * as db      from './db.js';
 import * as home    from './home.js';
 import * as focus   from './focus.js';
 import * as reframe from './reframe.js';
 import * as social  from './social.js';
+import * as profile from './profile.js';
 
 const SCREENS = {
   home:    { mod: home,    root: document.getElementById('home-root')    },
   focus:   { mod: focus,   root: document.getElementById('focus-root')   },
   reframe: { mod: reframe, root: document.getElementById('reframe-root') },
   social:  { mod: social,  root: document.getElementById('social-root')  },
-  profile: { mod: null,    root: null },
+  profile: { mod: profile, root: document.getElementById('profile-root') },
 };
 
 /** Any track may call this to announce something to screen readers. */
@@ -62,6 +64,15 @@ function boot() {
 
   const initial = location.hash.slice(1);
   show(SCREENS[initial]?.root ? initial : 'home');
+
+  // Database is optional and connects in the background — the app is
+  // already interactive by the time this resolves, and stays usable if
+  // it never does.
+  db.init().then(async connected => {
+    if (!connected) return;
+    store.setSink(db);
+    store.hydrate(await db.loadAll());
+  });
 }
 
 boot();

@@ -14,6 +14,11 @@ const STORAGE_KEY = 'soulshrine.v1';
 const state = load() ?? structuredClone(SEED);
 const listeners = new Set();
 
+// Optional persistence backend, injected by app.js. Kept as a hook rather
+// than an import so store.js has no dependency on the database — the app
+// runs identically with nothing plugged in.
+let sink = null;
+
 function load() {
   let saved;
   try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)); }
@@ -115,12 +120,15 @@ export const store = {
     if (!s) return;
     s.focusedMin = focusedMin;
     emit();
+    sink?.saveSession?.(s);
   },
 
   /** Track A: record a completed reframe. */
   addReframe({ input, distortion, response }) {
-    state.reframes.unshift({ input, distortion, response, ts: Date.now() });
+    const entry = { input, distortion, response, ts: Date.now() };
+    state.reframes.unshift(entry);
     emit();
+    sink?.saveReframe?.(entry);
   },
 
   /** Track C: save quiz result. */
@@ -164,6 +172,36 @@ export const store = {
   subscribe(fn) {
     listeners.add(fn);
     return () => listeners.delete(fn);
+  },
+
+  /* ---- persistence backend ---- */
+
+  /** app.js plugs the database in here once it has connected. */
+  setSink(backend) { sink = backend; },
+
+  /**
+   * Merge server history in without losing anything held locally.
+   * Sessions dedupe on id; reframes on timestamp + text, since the
+   * server assigns its own ids.
+   */
+  hydrate(remote) {
+    if (!remote) return;
+
+    if (remote.sessions?.length) {
+      const seen = new Set(state.sessions.map(s => s.id));
+      for (const s of remote.sessions) if (!seen.has(s.id)) state.sessions.push(s);
+      state.sessions.sort((a, b) => a.date.localeCompare(b.date));
+    }
+
+    if (remote.reframes?.length) {
+      const seen = new Set(state.reframes.map(r => `${r.ts}|${r.input}`));
+      for (const r of remote.reframes) {
+        if (!seen.has(`${r.ts}|${r.input}`)) state.reframes.push(r);
+      }
+      state.reframes.sort((a, b) => b.ts - a.ts);
+    }
+
+    emit();
   },
 
   /** Demo escape hatch — wipe back to the seeded persona. */

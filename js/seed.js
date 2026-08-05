@@ -12,9 +12,14 @@ const daysAgo = n =>
 export const SEED = {
   user: {
     name: 'Bhone',
+    handle: '@bhone',
+    avatar: '🦊',
     school: 'Temasek Polytechnic',
+    course: 'Diploma in Information Technology',
     year: 2,
     gpa: 3.91,
+    joined: '2025-04-12',
+    streakDays: 6,
     modules: ['Mobile App Development', 'Web Application Development',
               'Database', 'Data Structures', 'Computational Thinking'],
 
