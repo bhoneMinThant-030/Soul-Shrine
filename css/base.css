@@ -156,7 +156,6 @@ html, body {
 @media (min-width: 900px) {
   .sidenav { display: flex; flex-direction: column; }
   .topbar { display: none; }
-  .bottom-nav { display: none; }
   #main { padding-bottom: 40px; }
 }
 
@@ -183,6 +182,13 @@ html, body {
 .bottom-tab { display: grid; place-items: center; width: 40px; height: 40px; margin: auto; border: 0; border-radius: 50%; background: transparent; color: #777b92; cursor: pointer; }
 .bottom-tab svg { width: 21px; height: 21px; fill: currentColor; }
 .bottom-tab.is-active { background: #6668df; color: white; box-shadow: 0 5px 12px rgba(100, 103, 222, .25); }
+
+/* Phone only — the sidebar takes over on wider screens. This has to sit
+   after the .bottom-nav rule above, not with the other desktop overrides,
+   or `display: grid` wins on specificity ties. */
+@media (min-width: 900px) {
+  .bottom-nav { display: none; }
+}
 
 .btn {
   appearance: none;
