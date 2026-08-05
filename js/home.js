@@ -6,7 +6,6 @@ import { openWith } from './reframe.js';
 // wearing two hats.
 const ADVICE = {
   exam: "I'm going to freeze in the exam and forget everything I revised",
-  motivation: "I can't make myself start anything today",
 };
 
 let root = null;
@@ -48,18 +47,13 @@ function render() {
         <h2 id="advice-title">AI Advice for You</h2>
         <button class="see-all" id="home-advice">See All</button>
       </div>
-      <div class="advice-grid">
-        <button class="advice-card advice-card-blue" data-advice="exam">
+      <button class="advice-card advice-card-blue" data-advice="exam">
+        <span class="advice-copy">
           <strong>Exam Stress</strong>
-          <span>Techniques to lower anxiety.</span>
-          <small><i class="mini-play">▶</i> 5 Mins</small>
-        </button>
-        <button class="advice-card advice-card-purple" data-advice="motivation">
-          <strong>Motivation</strong>
-          <span>Find your drive to study.</span>
-          <small><i class="mini-play">▶</i> 3 Mins</small>
-        </button>
-      </div>
+          <span>Name the thought that's spiralling, and see it against your own record.</span>
+        </span>
+        <i class="mini-play" aria-hidden="true">▶</i>
+      </button>
     </section>
 
     <button class="mood-card" id="home-mood">

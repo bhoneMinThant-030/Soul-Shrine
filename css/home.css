@@ -16,16 +16,13 @@
 .section-heading { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 11px; }
 .section-heading h2 { margin: 0; color: #24263b; font-size: 1.55rem; letter-spacing: -0.035em; }
 .see-all { border: 0; background: transparent; color: #4b4cd3; font: inherit; font-size: .75rem; cursor: pointer; }
-.advice-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
-.advice-card { min-height: 161px; display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 21px 20px 16px; border: 0; border-radius: 12px; color: #13243b; text-align: left; cursor: pointer; }
+.advice-card { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 20px; border: 0; border-radius: 12px; color: #13243b; text-align: left; cursor: pointer; }
 .advice-card:hover { transform: translateY(-2px); }
-.advice-card strong { font-size: .95rem; }
-.advice-card > span { font-size: .78rem; line-height: 1.35; max-width: 125px; }
-.advice-card small { display: flex; align-items: center; gap: 8px; margin-top: auto; font-size: .75rem; font-weight: 650; }
+.advice-copy { display: grid; gap: 5px; }
+.advice-card strong { font-size: 1.05rem; }
+.advice-copy > span { font-size: .8rem; line-height: 1.4; max-width: 340px; }
 .advice-card-blue { background: #a8e7f8; }
-.advice-card-purple { background: #b8bafd; color: #151857; }
-.mini-play { width: 34px; height: 34px; color: #1680a0; font-size: .7rem; }
-.advice-card-purple .mini-play { color: #4c4ed0; }
+.mini-play { display: grid; place-items: center; flex: 0 0 auto; width: 42px; height: 42px; border-radius: 50%; background: #fff; color: #1680a0; font-style: normal; font-size: .8rem; }
 
 .mood-card { width: 100%; display: flex; align-items: center; gap: 13px; margin-top: 39px; padding: 19px 20px; border: 1px solid #e8e9f0; border-radius: 12px; background: #f5f6fb; color: #282a40; text-align: left; box-shadow: 0 3px 5px rgba(48, 51, 76, .06); cursor: pointer; }
 .mood-card > span:nth-child(2) { display: grid; gap: 1px; }
