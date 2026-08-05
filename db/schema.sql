@@ -1,10 +1,13 @@
 -- Fourward — Supabase schema
 -- Run this once in the Supabase SQL editor (Dashboard → SQL → New query).
 --
--- Prototype scope: one shared demo user, no auth. The anon key is meant to
--- be public — access is controlled by the policies below, not by hiding the
--- key. Before this goes anywhere real, swap `user_id text` for a reference
--- to auth.users and scope every policy to auth.uid().
+-- Prototype scope: one shared demo user, no auth. The publishable key is
+-- meant to be public — access is controlled by the policies below, not by
+-- hiding the key. Before this goes anywhere real, swap `user_id text` for a
+-- reference to auth.users and scope every policy to auth.uid().
+--
+-- Note: `to anon` below covers both the legacy anon JWT and the newer
+-- sb_publishable_… keys — publishable keys resolve to the same anon role.
 
 create table if not exists sessions (
   id            uuid primary key default gen_random_uuid(),

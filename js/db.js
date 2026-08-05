@@ -8,9 +8,13 @@
 
    Credentials come from .env (gitignored), same as the model key:
      supabase_url      = "https://xxxx.supabase.co"
-     supabase_anon_key = "eyJhbGci..."
+     supabase_anon_key = "sb_publishable_..."   (or a legacy eyJ... anon key)
 
-   The anon key is designed to be public — access is enforced by
+   Dashboard → Connect, or Settings → API Keys. Take the PUBLISHABLE key
+   (`sb_publishable_…`); the legacy `anon` JWT still works but is being
+   retired. Never the secret / service_role key — that bypasses RLS.
+
+   The publishable key is designed to be public — access is enforced by
    the RLS policies in db/schema.sql, not by hiding it.
    ============================================================ */
 
