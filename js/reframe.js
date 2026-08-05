@@ -295,8 +295,8 @@ function render() {
     ${renderHistory()}
   `;
 
-  root.querySelector('#rf-go').addEventListener('click', submit);
-  root.querySelector('#rf-text').addEventListener('keydown', e => {
+  root.querySelector('#rf-go')?.addEventListener('click', submit);
+  root.querySelector('#rf-text')?.addEventListener('keydown', e => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit();
   });
 
